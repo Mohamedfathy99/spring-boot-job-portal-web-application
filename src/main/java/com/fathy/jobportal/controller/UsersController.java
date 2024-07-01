@@ -2,6 +2,7 @@ package com.fathy.jobportal.controller;
 
 import com.fathy.jobportal.entity.Users;
 import com.fathy.jobportal.entity.UsersType;
+import com.fathy.jobportal.services.UsersService;
 import com.fathy.jobportal.services.UsersTypeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +18,12 @@ public class UsersController {
 
     private final UsersTypeService usersTypeService;
 
+    private final UsersService usersService;
+
     @Autowired
-    public UsersController(UsersTypeService usersTypeService) {
+    public UsersController(UsersTypeService usersTypeService, UsersService usersService) {
         this.usersTypeService = usersTypeService;
+        this.usersService = usersService;
     }
 
     @GetMapping("/register")
@@ -32,7 +36,8 @@ public class UsersController {
 
     @PostMapping("/register/new")
     public String userRegistration(@Valid Users users){
-        System.out.println("User:: "+users);
+//        System.out.println("User:: "+users);
+        usersService.addNew(users);
         return "dashboard";
     }
 }
