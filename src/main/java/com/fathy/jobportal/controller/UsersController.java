@@ -44,7 +44,7 @@ public class UsersController {
     @PostMapping("/register/new")
     public String userRegistration(@Valid Users users){
         usersService.addNew(users);
-        return "dashboard";
+        return "redirect:/dashboard/";
     }
 
 //    @PostMapping("/register/new")
