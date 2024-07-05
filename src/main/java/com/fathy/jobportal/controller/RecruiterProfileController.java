@@ -4,6 +4,7 @@ import com.fathy.jobportal.entity.RecruiterProfile;
 import com.fathy.jobportal.entity.Users;
 import com.fathy.jobportal.repository.UsersRepository;
 import com.fathy.jobportal.services.RecruiterProfileService;
+import com.fathy.jobportal.util.FileUploadUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,6 +57,7 @@ public class RecruiterProfileController {
 
     }
 
+    @PostMapping("/addNew")
     public String addNew(RecruiterProfile recruiterProfile,
                          @RequestParam("image")MultipartFile multipartFile,
                          Model model){
@@ -75,5 +78,11 @@ public class RecruiterProfileController {
         RecruiterProfile savedUser = recruiterProfileService.addNew(recruiterProfile);
 
         String uploadDir = "photos/recruiter/"+savedUser.getUserAccountId();
+        try {
+            FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+        } catch (Exception exception){
+            exception.printStackTrace();
+        }
+        return "redirect:/dashboard/";
     }
 }
