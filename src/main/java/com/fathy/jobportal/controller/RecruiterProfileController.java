@@ -40,6 +40,7 @@ public class RecruiterProfileController {
     public String recruiterProfile(Model model){
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
             String currentUsername = authentication.getName();
             Users users = usersRepository.findByEmail(currentUsername).orElseThrow(() ->
@@ -53,13 +54,13 @@ public class RecruiterProfileController {
             }
 
         }
-        return "recruiter-profile";
+        return "recruiter_profile";
 
     }
 
     @PostMapping("/addNew")
     public String addNew(RecruiterProfile recruiterProfile,
-                         @RequestParam("image")MultipartFile multipartFile,
+                         @RequestParam("image") MultipartFile multipartFile,
                          Model model){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
@@ -77,7 +78,7 @@ public class RecruiterProfileController {
         }
         RecruiterProfile savedUser = recruiterProfileService.addNew(recruiterProfile);
 
-        String uploadDir = "photos/recruiter/"+savedUser.getUserAccountId();
+        String uploadDir = "photos/recruiter/"+ savedUser.getUserAccountId();
         try {
             FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
         } catch (Exception exception){
