@@ -28,11 +28,10 @@ public class JobSeekerProfileController {
 
     private UsersRepository usersRepository;
 
-    public JobSeekerProfileController() {
-    }
-
     @Autowired
-    public JobSeekerProfileController(UsersRepository usersRepository) {
+    public JobSeekerProfileController(JobSeekerProfileService jobSeekerProfileService,
+                                      UsersRepository usersRepository) {
+        this.jobSeekerProfileService = jobSeekerProfileService;
         this.usersRepository = usersRepository;
     }
 
