@@ -28,7 +28,7 @@ public class JobSeekerProfile {
     @Column(nullable = true, length = 64)
     private String profilePhoto;
 
-    @OneToOne(targetEntity = Skills.class,
+    @OneToMany(targetEntity = Skills.class,
             cascade = CascadeType.ALL,
             mappedBy = "jobSeekerProfile")
     private List<Skills> skills;
@@ -40,7 +40,7 @@ public class JobSeekerProfile {
         this.userId = userId;
     }
 
-    public JobSeekerProfile(int userAccountId, Users userId,
+    public JobSeekerProfile(Integer userAccountId, Users userId,
                             String firstName, String lastName,
                             String city, String state, String country,
                             String workAuthorization, String employmentType,

@@ -103,7 +103,7 @@ public class JobSeekerProfileController {
         JobSeekerProfile seekerProfile = jobSeekerProfileService.addNew(jobSeekerProfile);
 
         try {
-            String uploadDir = "/photos/candidate/" + jobSeekerProfile.getUserAccountId();
+            String uploadDir = "photos/candidate/" + jobSeekerProfile.getUserAccountId();
             if (!Objects.equals(image.getOriginalFilename(), "")){
                 FileUploadUtil.saveFile(uploadDir, imageName, image);
             }
