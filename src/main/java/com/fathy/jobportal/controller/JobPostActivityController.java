@@ -1,10 +1,8 @@
 package com.fathy.jobportal.controller;
 
-import com.fathy.jobportal.entity.JobPostActivity;
-import com.fathy.jobportal.entity.RecruiterJobsDto;
-import com.fathy.jobportal.entity.RecruiterProfile;
-import com.fathy.jobportal.entity.Users;
+import com.fathy.jobportal.entity.*;
 import com.fathy.jobportal.services.JobPostActivityService;
+import com.fathy.jobportal.services.JobSeekerApplyService;
 import com.fathy.jobportal.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -13,12 +11,14 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -30,11 +30,14 @@ public class JobPostActivityController {
 
     private final JobPostActivityService jobPostActivityService;
 
+    private final JobSeekerApplyService jobSeekerApplyService;
+
     @Autowired
     public JobPostActivityController(UsersService usersService,
-                                     JobPostActivityService jobPostActivityService) {
+                                     JobPostActivityService jobPostActivityService, JobSeekerApplyService jobSeekerApplyService) {
         this.usersService = usersService;
         this.jobPostActivityService = jobPostActivityService;
+        this.jobSeekerApplyService = jobSeekerApplyService;
     }
 
     @GetMapping("/dashboard/")
@@ -95,7 +98,16 @@ public class JobPostActivityController {
             partialRemote = "Partial-Remote";
             type = false;
         }
-        
+
+        if (!dateSearchFlag && !remote && !type && !StringUtils.hasText(job)
+                && !StringUtils.hasText(location)) {
+            jobPost = jobPostActivityService.getAll();
+        } else {
+            jobPost = jobPostActivityService.search(job, location, Arrays.asList(partTime, fullTime, freelance),
+                    Arrays.asList(remoteOnly, officeOnly, partialRemote),searchDate);
+        }
+
+
         Object currentUserProfile = usersService.getCurrentUserProfile();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)){
@@ -106,6 +118,9 @@ public class JobPostActivityController {
                         jobPostActivityService.getRecruiterJobs(((RecruiterProfile)
                                 currentUserProfile).getUserAccountId());
                 model.addAttribute("jobPost", recruiterJobs);
+            } else {
+                List<JobSeekerApply> jobSeekerApplyList
+                        = jobSeekerApplyService.getCandidatesJobs((JobSeekerProfile) currentUserProfile);
             }
         }
         model.addAttribute("user", currentUserProfile);
