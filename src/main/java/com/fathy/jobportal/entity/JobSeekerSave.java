@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"userId","jobPostActivity"})
+        @UniqueConstraint(columnNames = {"userId","job"})
 })
 public class JobSeekerSave implements Serializable {
 
@@ -19,17 +19,17 @@ public class JobSeekerSave implements Serializable {
     private JobSeekerProfile userId;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "jobPostActivity", referencedColumnName = "jobPostId")
-    private JobPostActivity jobPostActivity;
+    @JoinColumn(name = "job", referencedColumnName = "jobPostId")
+    private JobPostActivity job;
 
     public JobSeekerSave() {
     }
 
     public JobSeekerSave(Integer id, JobSeekerProfile userId,
-                         JobPostActivity jobPostActivity) {
+                         JobPostActivity job) {
         this.id = id;
         this.userId = userId;
-        this.jobPostActivity = jobPostActivity;
+        this.job = job;
     }
 
     public Integer getId() {
@@ -49,11 +49,11 @@ public class JobSeekerSave implements Serializable {
     }
 
     public JobPostActivity getJobPostActivity() {
-        return jobPostActivity;
+        return job;
     }
 
-    public void setJobPostActivity(JobPostActivity jobPostActivity) {
-        this.jobPostActivity = jobPostActivity;
+    public void setJobPostActivity(JobPostActivity job) {
+        this.job = job;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class JobSeekerSave implements Serializable {
         return "JobSeekerSave{" +
                 "id=" + id +
                 ", userId=" + userId +
-                ", jobPostActivity=" + jobPostActivity +
+                ", job=" + job +
                 '}';
     }
 }

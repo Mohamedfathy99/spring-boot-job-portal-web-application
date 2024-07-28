@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Entity
 @Table(uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"userId","jobPostActivity"})
+        @UniqueConstraint(columnNames = {"userId","job"})
 })
 public class JobSeekerApply implements Serializable {
 
@@ -21,8 +21,8 @@ public class JobSeekerApply implements Serializable {
     private JobSeekerProfile userId;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "jobPostActivity", referencedColumnName = "jobPostId")
-    private JobPostActivity jobPostActivity;
+    @JoinColumn(name = "job", referencedColumnName = "jobPostId")
+    private JobPostActivity job;
 
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date applyDate;
@@ -33,11 +33,11 @@ public class JobSeekerApply implements Serializable {
     }
 
     public JobSeekerApply(Integer id, JobSeekerProfile userId,
-                          JobPostActivity jobPostActivity,
+                          JobPostActivity job,
                           Date applyDate, String coverLetter) {
         this.id = id;
         this.userId = userId;
-        this.jobPostActivity = jobPostActivity;
+        this.job = job;
         this.applyDate = applyDate;
         this.coverLetter = coverLetter;
     }
@@ -58,12 +58,12 @@ public class JobSeekerApply implements Serializable {
         this.userId = userId;
     }
 
-    public JobPostActivity getJobPostActivity() {
-        return jobPostActivity;
+    public JobPostActivity getJob() {
+        return job;
     }
 
-    public void setJobPostActivity(JobPostActivity jobPostActivity) {
-        this.jobPostActivity = jobPostActivity;
+    public void setJob(JobPostActivity job) {
+        this.job = job;
     }
 
     public Date getApplyDate() {
@@ -87,7 +87,7 @@ public class JobSeekerApply implements Serializable {
         return "JobSeekerApply{" +
                 "id=" + id +
                 ", userId=" + userId +
-                ", jobPostActivity=" + jobPostActivity +
+                ", job=" + job +
                 ", applyDate=" + applyDate +
                 ", coverLetter='" + coverLetter + '\'' +
                 '}';
