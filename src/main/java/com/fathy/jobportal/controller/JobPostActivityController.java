@@ -3,6 +3,7 @@ package com.fathy.jobportal.controller;
 import com.fathy.jobportal.entity.*;
 import com.fathy.jobportal.services.JobPostActivityService;
 import com.fathy.jobportal.services.JobSeekerApplyService;
+import com.fathy.jobportal.services.JobSeekerSaveService;
 import com.fathy.jobportal.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -32,12 +33,15 @@ public class JobPostActivityController {
 
     private final JobSeekerApplyService jobSeekerApplyService;
 
+    private final JobSeekerSaveService jobSeekerSaveService;
+
     @Autowired
     public JobPostActivityController(UsersService usersService,
-                                     JobPostActivityService jobPostActivityService, JobSeekerApplyService jobSeekerApplyService) {
+                                     JobPostActivityService jobPostActivityService, JobSeekerApplyService jobSeekerApplyService, JobSeekerSaveService jobSeekerSaveService) {
         this.usersService = usersService;
         this.jobPostActivityService = jobPostActivityService;
         this.jobSeekerApplyService = jobSeekerApplyService;
+        this.jobSeekerSaveService = jobSeekerSaveService;
     }
 
     @GetMapping("/dashboard/")
@@ -121,6 +125,39 @@ public class JobPostActivityController {
             } else {
                 List<JobSeekerApply> jobSeekerApplyList
                         = jobSeekerApplyService.getCandidatesJobs((JobSeekerProfile) currentUserProfile);
+                List<JobSeekerSave> jobSeekerSaveList
+                        = jobSeekerSaveService.getCandidatesJob((JobSeekerProfile) currentUserProfile);
+                boolean exist;
+                boolean saved;
+
+                for (JobPostActivity jobActivity: jobPost){
+                    exist = false;
+                    saved = false;
+                    for (JobSeekerApply jobSeekerApply: jobSeekerApplyList){
+                        if (Objects.equals(jobActivity.getJobPostId(),
+                                jobSeekerApply.getJob().getPostedById())){
+                            jobActivity.setIsActive(true);
+                            exist = true;
+                            break;
+                        }
+                    }
+                    for (JobSeekerSave jobSeekerSave: jobSeekerSaveList){
+                        if (Objects.equals(jobActivity.getJobPostId(),
+                                jobSeekerSave.getJobPostActivity().getJobPostId())){
+                            jobActivity.setIsSaved(true);
+                            saved = true;
+                            break;
+                        }
+                    }
+                    if(!exist){
+                        jobActivity.setIsActive(false);
+                    }
+                    if (!saved){
+                        jobActivity.setIsSaved(false);
+                    }
+
+                    model.addAttribute("jobPost", jobPost);
+                }
             }
         }
         model.addAttribute("user", currentUserProfile);
