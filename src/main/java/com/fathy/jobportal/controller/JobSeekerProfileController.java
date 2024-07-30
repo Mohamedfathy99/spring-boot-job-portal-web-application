@@ -5,8 +5,13 @@ import com.fathy.jobportal.entity.Skills;
 import com.fathy.jobportal.entity.Users;
 import com.fathy.jobportal.repository.UsersRepository;
 import com.fathy.jobportal.services.JobSeekerProfileService;
+import com.fathy.jobportal.util.FileDownloadUtil;
 import com.fathy.jobportal.util.FileUploadUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -124,8 +129,27 @@ public class JobSeekerProfileController {
     }
 
     @GetMapping("/downloadResume")
-    public ResponseEntity<?> downloadResume(@RequestParam(value = "fileName") String fileName, @RequestParam(value = "userId") String userId){
+    public ResponseEntity<?> downloadResume(@RequestParam(value = "fileName") String fileName,
+                                            @RequestParam(value = "userID") String userId){
 
-        
+        FileDownloadUtil fileDownloadUtil = new FileDownloadUtil();
+        Resource resource = null;
+
+        try {
+            resource = fileDownloadUtil.getFileAsResource("photos/candidate/"+userId, fileName);
+        } catch (IOException exception){
+            return ResponseEntity.badRequest().build();
+        }
+
+        if (resource == null){
+            return new  ResponseEntity<>("File not found", HttpStatus.NOT_FOUND);
+        }
+
+        String contentType = "application/octet-stream";
+        String headerValue = "attachment; filename=\"" + resource.getFilename() + "\"";
+
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
+                .body(resource);
     }
 }
