@@ -7,6 +7,7 @@ import com.fathy.jobportal.repository.UsersRepository;
 import com.fathy.jobportal.services.JobSeekerProfileService;
 import com.fathy.jobportal.util.FileUploadUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,10 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -115,5 +113,19 @@ public class JobSeekerProfileController {
             throw new RuntimeException(exception);
         }
         return "redirect:/dashboard/";
+    }
+
+    @GetMapping("/{id}")
+    public String candidateProfile(@PathVariable("id") int id, Model model){
+
+        Optional<JobSeekerProfile> seekerProfile = jobSeekerProfileService.getOne(id);
+        model.addAttribute("profile", seekerProfile.get());
+        return "job-seeker-profile";
+    }
+
+    @GetMapping("/downloadResume")
+    public ResponseEntity<?> downloadResume(@RequestParam(value = "fileName") String fileName, @RequestParam(value = "userId") String userId){
+
+        
     }
 }
